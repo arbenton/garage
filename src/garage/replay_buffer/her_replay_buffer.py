@@ -33,8 +33,8 @@ def make_her_sample(replay_k, reward_fun):
         # Select which episodes to use
         time_horizon = episode_batch['action'].shape[1]
         rollout_batch_size = episode_batch['action'].shape[0]
-        episode_idxs = np.random.randint(
-            rollout_batch_size, size=sample_batch_size)
+        episode_idxs = np.random.randint(rollout_batch_size,
+                                         size=sample_batch_size)
         # Select time steps to use
         t_samples = np.random.randint(time_horizon, size=sample_batch_size)
         transitions = {
@@ -94,8 +94,8 @@ class HerReplayBuffer(ReplayBuffer):
 
         transitions = self._sample_transitions(buffer, batch_size)
 
-        for key in (['reward', 'next_observation', 'next_achieved_goal'] +
-                    list(self._buffer.keys())):
+        for key in (['reward', 'next_observation', 'next_achieved_goal']
+                    + list(self._buffer.keys())):
             assert key in transitions, 'key %s missing from transitions' % key
 
         return transitions

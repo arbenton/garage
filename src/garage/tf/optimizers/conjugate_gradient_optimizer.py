@@ -20,8 +20,9 @@ class PerlmutterHvp:
         self.reg_coeff = reg_coeff
         params = target.get_params(trainable=True)
         with tf.name_scope(name, 'PerlmutterHvp', [f, inputs, params]):
-            constraint_grads = tf.gradients(
-                f, xs=params, name='gradients_constraint')
+            constraint_grads = tf.gradients(f,
+                                            xs=params,
+                                            name='gradients_constraint')
             for idx, (grad, param) in enumerate(zip(constraint_grads, params)):
                 if grad is None:
                     constraint_grads[idx] = tf.zeros_like(param)
@@ -32,19 +33,21 @@ class PerlmutterHvp:
             ])
 
             def hx_plain():
-                with tf.name_scope(
-                        'hx_plain', values=[constraint_grads, params, xs]):
-                    with tf.name_scope(
-                            'hx_function', values=[constraint_grads, xs]):
+                with tf.name_scope('hx_plain',
+                                   values=[constraint_grads, params, xs]):
+                    with tf.name_scope('hx_function',
+                                       values=[constraint_grads, xs]):
                         hx_f = tf.reduce_sum(
                             tf.stack([
                                 tf.reduce_sum(g * x)
                                 for g, x in zip(constraint_grads, xs)
                             ])),
-                    hx_plain_splits = tf.gradients(
-                        hx_f, params, name='gradients_hx_plain')
-                    for idx, (hx, param) in enumerate(
-                            zip(hx_plain_splits, params)):
+                    hx_plain_splits = tf.gradients(hx_f,
+                                                   params,
+                                                   name='gradients_hx_plain')
+                    for idx, (hx,
+                              param) in enumerate(zip(hx_plain_splits,
+                                                      params)):
                         if hx is None:
                             hx_plain_splits[idx] = tf.zeros_like(param)
                     return tensor_utils.flatten_tensor_variables(
@@ -84,8 +87,9 @@ class FiniteDifferenceHvp:
         params = target.get_params(trainable=True)
         with tf.name_scope(name, 'FiniteDifferenceHvp',
                            [f, inputs, params, target]):
-            constraint_grads = tf.gradients(
-                f, xs=params, name='gradients_constraint')
+            constraint_grads = tf.gradients(f,
+                                            xs=params,
+                                            name='gradients_constraint')
             for idx, (grad, param) in enumerate(zip(constraint_grads, params)):
                 if grad is None:
                     constraint_grads[idx] = tf.zeros_like(param)
@@ -100,13 +104,13 @@ class FiniteDifferenceHvp:
                     param_val = self.target.get_param_values(trainable=True)
                     eps = np.cast['float32'](
                         self.base_eps / (np.linalg.norm(param_val) + 1e-8))
-                    self.target.set_param_values(
-                        param_val + eps * flat_xs, trainable=True)
+                    self.target.set_param_values(param_val + eps * flat_xs,
+                                                 trainable=True)
                     flat_grad_dvplus = self.opt_fun['f_grad'](*inputs_)
                     self.target.set_param_values(param_val, trainable=True)
                     if self.symmetric:
-                        self.target.set_param_values(
-                            param_val - eps * flat_xs, trainable=True)
+                        self.target.set_param_values(param_val - eps * flat_xs,
+                                                     trainable=True)
                         flat_grad_dvminus = self.opt_fun['f_grad'](*inputs_)
                         hx = (flat_grad_dvplus - flat_grad_dvminus) / (2 * eps)
                         self.target.set_param_values(param_val, trainable=True)
@@ -236,12 +240,11 @@ class ConjugateGradientOptimizer(Serializable):
                         grads[idx] = tf.zeros_like(param)
                 flat_grad = tensor_utils.flatten_tensor_variables(grads)
 
-            self._hvp_approach.update_opt(
-                f=constraint_term,
-                target=target,
-                inputs=inputs + extra_inputs,
-                reg_coeff=self._reg_coeff,
-                name='update_opt_' + constraint_name)
+            self._hvp_approach.update_opt(f=constraint_term,
+                                          target=target,
+                                          inputs=inputs + extra_inputs,
+                                          reg_coeff=self._reg_coeff,
+                                          name='update_opt_' + constraint_name)
 
             self._target = target
             self._max_constraint_val = constraint_value
@@ -304,10 +307,10 @@ class ConjugateGradientOptimizer(Serializable):
                 subsample_inputs = tuple()
                 for inputs_grouped in subsample_grouped_inputs:
                     n_samples = len(inputs_grouped[0])
-                    inds = np.random.choice(
-                        n_samples,
-                        int(n_samples * self._subsample_factor),
-                        replace=False)
+                    inds = np.random.choice(n_samples,
+                                            int(n_samples
+                                                * self._subsample_factor),
+                                            replace=False)
                     subsample_inputs += tuple(
                         [x[inds] for x in inputs_grouped])
             else:
@@ -332,9 +335,11 @@ class ConjugateGradientOptimizer(Serializable):
             hx = self._hvp_approach.build_eval(subsample_inputs + extra_inputs)
             descent_direction = krylov.cg(hx, flat_g, cg_iters=self._cg_iters)
 
+            # yapf: disable
             initial_step_size = np.sqrt(
-                2.0 * self._max_constraint_val *
-                (1. / (descent_direction.dot(hx(descent_direction)) + 1e-8)))
+                2.0 * self._max_constraint_val
+                * (1. / (descent_direction.dot(hx(descent_direction)) + 1e-8)))
+            # yapf: enable
             if np.isnan(initial_step_size):
                 initial_step_size = 1.
             flat_descent_step = initial_step_size * descent_direction
@@ -355,21 +360,22 @@ class ConjugateGradientOptimizer(Serializable):
                 if loss < loss_before and \
                    constraint_val <= self._max_constraint_val:
                     break
-            if (np.isnan(loss) or np.isnan(constraint_val)
-                    or loss >= loss_before or constraint_val >=
-                    self._max_constraint_val) and not self._accept_violation:
+            if ((np.isnan(loss) or np.isnan(constraint_val)
+                 or loss >= loss_before
+                 or constraint_val >= self._max_constraint_val)
+                    and not self._accept_violation):
                 logger.log(
                     'Line search condition violated. Rejecting the step!')
                 if np.isnan(loss):
                     logger.log('Violated because loss is NaN')
                 if np.isnan(constraint_val):
-                    logger.log('Violated because constraint %s is NaN' %
-                               self._constraint_name)
+                    logger.log('Violated because constraint %s is NaN'
+                               % self._constraint_name)
                 if loss >= loss_before:
                     logger.log('Violated because loss not improving')
                 if constraint_val >= self._max_constraint_val:
-                    logger.log('Violated because constraint %s is violated' %
-                               self._constraint_name)
+                    logger.log('Violated because constraint %s is violated'
+                               % self._constraint_name)
                 self._target.set_param_values(prev_param, trainable=True)
             logger.log('backtrack iters: %d' % n_iter)
             logger.log('computing loss after')

@@ -70,8 +70,8 @@ class PenaltyLbfgsOptimizer(Serializable):
             self._constraint_name = constraint_name
 
             def get_opt_output():
-                with tf.name_scope(
-                        'get_opt_output', values=[params, penalized_loss]):
+                with tf.name_scope('get_opt_output',
+                                   values=[params, penalized_loss]):
                     grads = tf.gradients(penalized_loss, params)
                     for idx, (grad, param) in enumerate(zip(grads, params)):
                         if grad is None:
@@ -143,9 +143,9 @@ class PenaltyLbfgsOptimizer(Serializable):
 
                 # Either constraint satisfied, or we are at the last iteration
                 # already and no alternative parameter satisfies the constraint
-                if try_constraint_val < self._max_constraint_val or \
-                        (penalty_itr == self._max_penalty_itr - 1 and
-                            opt_params is None):
+                if (try_constraint_val < self._max_constraint_val
+                        or (penalty_itr == self._max_penalty_itr - 1
+                            and opt_params is None)):
                     opt_params = itr_opt_params
 
                 if not self._adapt_penalty:
@@ -165,8 +165,11 @@ class PenaltyLbfgsOptimizer(Serializable):
                         penalty_scale_factor = self._decrease_penalty_factor
                         opt_params = itr_opt_params
                 else:
-                    if (penalty_scale_factor > 1 and
-                            try_constraint_val <= self._max_constraint_val):
+                    # yapf: disable
+                    if (penalty_scale_factor > 1
+                            and try_constraint_val
+                            <= self._max_constraint_val):
+                        # yapf: enable
                         break
                     elif (penalty_scale_factor < 1
                           and try_constraint_val >= self._max_constraint_val):

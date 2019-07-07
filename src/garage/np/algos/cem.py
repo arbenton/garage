@@ -74,8 +74,8 @@ class CEM(BatchPolopt):
     def sample_params(self, epoch):
         extra_var_mult = max(1.0 - epoch / self.extra_decay_time, 0)
         sample_std = np.sqrt(
-            np.square(self.cur_std) +
-            np.square(self.extra_std) * extra_var_mult)
+            np.square(self.cur_std)
+            + np.square(self.extra_std) * extra_var_mult)
         return np.random.standard_normal(
             self.n_params) * sample_std + self.cur_mean
 

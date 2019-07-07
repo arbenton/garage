@@ -45,8 +45,8 @@ class ReplayBuffer(metaclass=abc.ABCMeta):
         for key in self._buffer.keys():
             self._buffer[key][idx] = episode_buffer[key]
         self._n_transitions_stored = min(
-            self._size_in_transitions, self._n_transitions_stored +
-            self._time_horizon * rollout_batch_size)
+            self._size_in_transitions, self._n_transitions_stored
+            + self._time_horizon * rollout_batch_size)
 
     @abstractmethod
     def sample(self, batch_size):

@@ -55,8 +55,8 @@ class NormalizedEnv(gym.Wrapper, Serializable):
 
     def _apply_normalize_obs(self, obs):
         self._update_obs_estimate(obs)
-        normalized_obs = (flatten(self.env.observation_space, obs) -
-                          self._obs_mean) / (np.sqrt(self._obs_var) + 1e-8)
+        normalized_obs = (flatten(self.env.observation_space, obs)
+                          - self._obs_mean) / (np.sqrt(self._obs_var) + 1e-8)
         if not self._flatten_obs:
             normalized_obs = unflatten(self.env.observation_space,
                                        normalized_obs)

@@ -26,10 +26,12 @@ class RecurrentCategorical(Distribution):
             old_prob_var = old_dist_info_vars['prob']
             new_prob_var = new_dist_info_vars['prob']
             # Assume layout is N * T * A
+            # yapf: disable
             return tf.reduce_sum(
-                old_prob_var *
-                (tf.log(old_prob_var + TINY) - tf.log(new_prob_var + TINY)),
+                old_prob_var
+                * (tf.log(old_prob_var + TINY) - tf.log(new_prob_var + TINY)),
                 axis=2)
+            # yapf: enable
 
     def kl(self, old_dist_info, new_dist_info):
         """
@@ -37,9 +39,11 @@ class RecurrentCategorical(Distribution):
         """
         old_prob = old_dist_info['prob']
         new_prob = new_dist_info['prob']
-        return np.sum(
-            old_prob * (np.log(old_prob + TINY) - np.log(new_prob + TINY)),
-            axis=2)
+        # yapf: disable
+        return np.sum(old_prob
+                      * (np.log(old_prob + TINY) - np.log(new_prob + TINY)),
+                      axis=2)
+        # yapf: enable
 
     def likelihood_ratio_sym(self,
                              x_var,

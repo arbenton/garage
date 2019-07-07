@@ -54,9 +54,8 @@ class GarageEnv(gym.Wrapper, Serializable):
             self.spec.action_space = self.action_space
             self.spec.observation_space = self.observation_space
         else:
-            self.spec = EnvSpec(
-                action_space=self.action_space,
-                observation_space=self.observation_space)
+            self.spec = EnvSpec(action_space=self.action_space,
+                                observation_space=self.observation_space)
 
         Serializable.quick_init(self, locals())
 
@@ -94,9 +93,11 @@ class GarageEnv(gym.Wrapper, Serializable):
                     glfw.destroy_window(self.env.viewer.window)
             elif any(package in self.env.spec._entry_point
                      for package in KNOWN_GYM_NOT_CLOSE_VIEWER):
-                if (hasattr(self.env, 'viewer') and
-                    (isinstance(self.env.viewer, Viewer)
-                     or isinstance(self.env.viewer, SimpleImageViewer))):
+                # yapf: disable
+                if (hasattr(self.env, 'viewer')
+                    and (isinstance(self.env.viewer, Viewer)
+                         or isinstance(self.env.viewer, SimpleImageViewer))):
+                    # yapf: enable
                     self.env.viewer.close()
 
     def reset(self, **kwargs):

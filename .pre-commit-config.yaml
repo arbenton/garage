@@ -89,7 +89,7 @@ repos:
         stages: [commit, push]
 # First pass: check format
 -   repo: https://github.com/pre-commit/mirrors-yapf
-    rev: v0.25.0
+    rev: v0.27.0
     hooks:
     -   id: yapf
         name: Check format by yapf
@@ -97,7 +97,7 @@ repos:
         stages: [commit, push]
 # Second pass: format in-place
 -   repo: https://github.com/pre-commit/mirrors-yapf
-    rev: v0.25.0
+    rev: v0.27.0
     hooks:
     -   id: yapf
         name: Format in-place by yapf

@@ -10,7 +10,6 @@ garage_packages="tests,garage,sandbox,examples"
 ignored_errors_all=(
 D     # docstring rules disabled
 W503  # line break before binary operator
-W504  # line break after binary operator
 )
 
 # Files or directories to exclude from checks applied to all files.

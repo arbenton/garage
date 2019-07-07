@@ -121,8 +121,8 @@ class BatchPolopt(RLAlgorithm):
 
         for idx, path in enumerate(paths):
             path_baselines = np.append(all_path_baselines[idx], 0)
-            deltas = (path['rewards'] + self.discount * path_baselines[1:] -
-                      path_baselines[:-1])
+            deltas = (path['rewards'] + self.discount * path_baselines[1:]
+                      - path_baselines[:-1])
             path['advantages'] = special.discount_cumsum(
                 deltas, self.discount * self.gae_lambda)
             path['deltas'] = deltas
@@ -172,8 +172,8 @@ class BatchPolopt(RLAlgorithm):
         undiscounted_returns = [sum(path['rewards']) for path in paths]
         self.episode_reward_mean.extend(undiscounted_returns)
 
-        ent = np.sum(self.policy.distribution.entropy(agent_infos) *
-                     valids) / np.sum(valids)
+        ent = np.sum(self.policy.distribution.entropy(agent_infos)
+                     * valids) / np.sum(valids)
 
         samples_data = dict(
             observations=obs,

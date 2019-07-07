@@ -97,8 +97,8 @@ class BatchPolopt(RLAlgorithm):
         undiscounted_returns = [sum(path['rewards']) for path in paths]
         self.episode_reward_mean.extend(undiscounted_returns)
 
-        ent = np.sum(self.policy.distribution.entropy(agent_infos) *
-                     valids) / np.sum(valids)
+        ent = np.sum(self.policy.distribution.entropy(agent_infos)
+                     * valids) / np.sum(valids)
 
         samples_data = dict(average_return=np.mean(undiscounted_returns))
 

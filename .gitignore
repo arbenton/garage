@@ -19,7 +19,6 @@ lib64/
 parts/
 sdist/
 var/
-.vscode/
 wheels/
 pip-wheel-metadata/
 share/python-wheels/
@@ -128,6 +127,7 @@ dmypy.json
 *.orig
 .idea
 .settings
+.vscode/
 
 # MacOS
 .DS_Store

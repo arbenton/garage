@@ -1,4 +1,4 @@
-"""Pytorch policies."""
-from garage.torch.policies.continuous_mlp_policy import ContinuousMLPPolicy
+"""PyTorch policies."""
+from garage.torch.policies.continuous_nn_policy import ContinuousNNPolicy
 
-__all__ = ['ContinuousMLPPolicy']
+__all__ = ['ContinuousNNPolicy']

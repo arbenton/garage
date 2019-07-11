@@ -7,7 +7,8 @@ from tests.fixtures import TfGraphTestCase
 
 class TestParameter(TfGraphTestCase):
     def test_param(self):
-        input_vars = tf.placeholder(shape=[None, 2, 3, 4], dtype=tf.float32)
+        input_vars = tf.compat.v1.placeholder(
+            shape=[None, 2, 3, 4], dtype=tf.float32)
         initial_params = np.array([48, 21, 33])
 
         params = parameter(
@@ -20,7 +21,7 @@ class TestParameter(TfGraphTestCase):
             input_vars: data,
         }
 
-        self.sess.run(tf.global_variables_initializer())
+        self.sess.run(tf.compat.v1.global_variables_initializer())
         p = self.sess.run(params, feed_dict=feed_dict)
 
         assert p.shape[:-1] == data.shape[:-1]

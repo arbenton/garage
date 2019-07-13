@@ -18,7 +18,6 @@ from dowel import logger
 import psutil
 
 from garage.experiment import deterministic, SnapshotConfig
-from garage.experiment.experiment import concretize
 from garage.experiment.local_tf_runner import LocalRunner
 from garage.misc.console import colorize
 import garage.plotter
@@ -125,8 +124,6 @@ def run_experiment(argv):
         '--variant_data',
         type=str,
         help='Pickled data for variant configuration')
-    parser.add_argument(
-        '--use_cloudpickle', type=ast.literal_eval, default=False)
 
     args = parser.parse_args(argv[1:])
 
@@ -175,8 +172,7 @@ def run_experiment(argv):
     else:
         variant_data = None
 
-    if not args.use_cloudpickle:
-        log_parameters(params_log_file, args)
+    log_parameters(params_log_file, args)
 
     logger.add_output(dowel.TextOutput(text_log_file))
     logger.add_output(dowel.CsvOutput(tabular_log_file))
@@ -196,25 +192,16 @@ def run_experiment(argv):
                 from_dir=args.resume_from_dir, from_epoch=args.resume_epoch)
             runner.resume()
     else:
-        # read from stdin
-        if args.use_cloudpickle:
-            import cloudpickle
-            method_call = cloudpickle.loads(base64.b64decode(args.args_data))
-            try:
-                method_call(snapshot_config, variant_data)
-            except BaseException:
-                children = garage.plotter.Plotter.get_plotters()
-                children += garage.tf.plotter.Plotter.get_plotters()
-                if args.n_parallel > 0:
-                    children += [parallel_sampler]
-                child_proc_shutdown(children)
-                raise
-        else:
-            data = pickle.loads(base64.b64decode(args.args_data))
-            maybe_iter = concretize(data)
-            if is_iterable(maybe_iter):
-                for _ in maybe_iter:
-                    pass
+        method_call = pickle.loads(base64.b64decode(args.args_data))
+        try:
+            method_call(snapshot_config, variant_data)
+        except BaseException:
+            children = garage.plotter.Plotter.get_plotters()
+            children += garage.tf.plotter.Plotter.get_plotters()
+            if args.n_parallel > 0:
+                children += [parallel_sampler]
+            child_proc_shutdown(children)
+            raise
 
     logger.remove_all()
     logger.pop_prefix()

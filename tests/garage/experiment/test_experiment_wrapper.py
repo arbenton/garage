@@ -17,8 +17,5 @@ def method_call(snapshot_config, variant_data):
 class TestExperimentWrapper:
     def test_experiment_wrapper_method_call(self):
         data = base64.b64encode(cloudpickle.dumps(method_call)).decode('utf-8')
-        args = [
-            '', '--args_data', data, '--use_cloudpickle', 'True', '--log_dir',
-            'data/'
-        ]
+        args = ['', '--args_data', data, '--log_dir', 'data/']
         run_experiment(args)

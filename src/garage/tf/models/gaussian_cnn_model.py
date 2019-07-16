@@ -218,16 +218,15 @@ class GaussianCNNModel(Model):
             else:
                 # separate MLPs for mean and std networks
                 # mean network
-                mean_conv = cnn(
-                    input_var=state_input,
-                    filter_dims=self._filter_dims,
-                    hidden_nonlinearity=self._hidden_nonlinearity,
-                    hidden_w_init=self._hidden_w_init,
-                    hidden_b_init=self._hidden_b_init,
-                    num_filters=self._num_filters,
-                    strides=self._strides,
-                    padding=self._padding,
-                    name='mean_cnn')
+                mean_conv = cnn(input_var=state_input,
+                                filter_dims=self._filter_dims,
+                                hidden_nonlinearity=self._hidden_nonlinearity,
+                                hidden_w_init=self._hidden_w_init,
+                                hidden_b_init=self._hidden_b_init,
+                                num_filters=self._num_filters,
+                                strides=self._strides,
+                                padding=self._padding,
+                                name='mean_cnn')
 
                 mean_network = mlp(
                     mean_conv,
